@@ -4,6 +4,6 @@ class Event:
         self._message = message
 
 
-    def parse(self):
+    def __str__(self):
         verb = self._type._verb
-        return f'{verb.title()} {self._message}'
+        return f' - {verb} {self._message}'

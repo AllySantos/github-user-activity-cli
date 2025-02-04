@@ -1,18 +1,19 @@
 import requests
+from exception import UserNotFound
+
 
 class API:
-    def __init__(self):
-        self._endpoint = 'https://api.github.com/events'
 
-    @property
-    def endpoint(self):
-        return self._endpoint
+    ENDPOINT = 'https://api.github.com'
 
-    def fetch_events(self, filter = None):
-        api_response = requests.get(self.endpoint)
+    @classmethod
+    def fetch_events(cls, username):
+
+        url = f'{cls.ENDPOINT}/users/{username}/events'
+        api_response = requests.get(url)
 
         if api_response.status_code != 200:
-            return False
+            raise UserNotFound(username)
 
         events = api_response.json()
         return events

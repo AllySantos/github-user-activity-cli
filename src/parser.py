@@ -3,7 +3,7 @@ from pyexpat.errors import messages
 from api import API
 from event import Event
 from type import Type
-from exception import ResponseEmpty
+from exception import ResponseEmpty, EventNotRegistered
 
 class EventParser:
 
@@ -21,7 +21,7 @@ class EventParser:
         create = Type('CreateEvent', 'Created')
         pull_request = Type('PullRequestEvent', 'Created pull request')
 
-        return [push, create, pull_request, issues, issue_comment, release]
+        return [push, create, pull_request, issues, issue_comment, release, watch]
 
     def get_type(self, api_name):
         type = next((t for t in self.types if t._api_name == api_name))
@@ -75,10 +75,14 @@ class EventParser:
                         repo = event['repo']['name']
                         message = f' on repo {repo}'
 
+                    case 'WatchEvent':
+                        repo = event['repo']['name']
+                        message = f'repo "{repo}"'
+
                 obj_event = Event(type, message)
                 events.append(obj_event)
             except:
-                print(event)
+                raise EventNotRegistered(event)
 
 
         filtered_events = self.filter_events(events, filter)
